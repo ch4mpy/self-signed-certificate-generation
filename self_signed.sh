@@ -14,10 +14,11 @@ fi
 
 # Default values
 CERTIF_DIR="."
-CN=$HOSTNAME
-if [ -z "${CN}" ]; then
-  CN=`hostanme`
+if [ -z "${HOSTNAME}" ]; then
+  HOSTNAME=`hostanme`
 fi
+CN=${HOSTNAME}
+DEFAULT_ALTNAMES="localhost,127.0.0.1,10.0.2.2"
 CACERTS_PWD="changeit"
 OUT_DIR="."
 COUNTRY="PF"
@@ -27,32 +28,18 @@ ORGANISATION="c4-soft"
 EMAIL=`whoami`"@${ORGANISATION}.com"
 
 # User inputs
-if [ -z "${CN}" ]; then
-  read -p "Failed to auto-detect hostname. Please provide one: " CN
-fi
-if [ -z "${CN}" ]; then
-  echo "ERROR: hostname is required"
-  exit 1;
-fi
-read -p "JAVA_HOME (default: ${JAVA_HOME}): " -r JAVA
-read -p "cacerts pasword (default: ${CACERTS_PWD}): " CACERTS_PASSWORD
-read -p "Country (2 chars ISO code , default: ${COUNTRY}): " C
-read -p "State (default: ${STATE}): " ST
-read -p "City (default: ${CITY}): " L
-read -p "Organisation (default: ${ORGANISATION}): " O
-read -p "e-mail (default: ${EMAIL}): " EMAIL_ADDRESS
+echo ""
+echo "CN is ${CN}"
+read -p "Comma separated list of alternative names for the certificate (defaults: ${DEFAULT_ALTNAMES}): " ALTNAMES
+ALTNAMES=${ALTNAMES:-${DEFAULT_ALTNAMES}}
 
-# Figure out which JDK to work with
-if [ -z "${JAVA}" ]
-then
-  JAVA=`echo $JAVA_HOME`
-fi
+read -p "JAVA_HOME (default: ${JAVA_HOME}): " -r JAVA
+JAVA=${JAVA:-${JAVA_HOME}}
+JAVA=$(echo $JAVA | sed 's/\\/\//g')
 if [ -z "${JAVA}" ]; then
   echo "ERROR: could not locate JDK / JRE root directory"
   exit 1
 fi
-JAVA=$(echo $JAVA | sed 's/\\/\//g')
-
 echo $JAVA
 # Locate cacerts file
 if [ -f "${JAVA}/lib/security/cacerts" ]; then
@@ -66,33 +53,25 @@ else
   exit 1
 fi
 
-# cacerts file password
-if [ -z "${CACERTS_PASSWORD}" ]; then
-  CACERTS_PASSWORD=$CACERTS_PWD
-fi
+read -p "cacerts pasword (default: ${CACERTS_PWD}): " CACERTS_PASSWORD
+CACERTS_PASSWORD=${CACERTS_PASSWORD:-${CACERTS_PWD}}
 
-# Certificate parameters
-if [ -z "${C}" ]; then
-  C=$COUNTRY
-fi
+read -p "Country (2 chars ISO code , default: ${COUNTRY}): " C
+C=${C:-${COUNTRY}}
 
-if [ -z "${ST}" ]; then
-  ST=$STATE
-fi
+read -p "State (default: ${STATE}): " ST
+ST={ST:-${STATE}}
 
-if [ -z "${L}" ]; then
-  L=$CITY
-fi
+read -p "City (default: ${CITY}): " L
+L={L:-${CITY}}
 
-if [ -z "${O}" ]; then
-  O=$ORGANISATION
-fi
+read -p "Organisation (default: ${ORGANISATION}): " O
+O={O:-${ORGANISATION}}
 
-if [ -z "${EMAIL_ADDRESS}" ]; then
-  EMAIL_ADDRESS=$EMAIL
-fi
+read -p "e-mail (default: ${EMAIL}): " EMAIL_ADDRESS
+EMAIL_ADDRESS=EMAIL_ADDRESS{:-${EMAIL}}
 
-# Update templated config
+# Create templated config
 rm -f ${CN}_self_signed.config;
 echo -e "[req]\n\
 default_bits       = 2048\n\
@@ -121,16 +100,20 @@ keyUsage         = critical, digitalSignature, nonRepudiation, keyEncipherment, 
 extendedKeyUsage = critical, serverAuth, clientAuth\n\
 \n\
 [alt_names]\n\
-DNS.1 = [hostname]\n\
-DNS.2 = localhost\n\
-DNS.3 = 127.0.0.1\n\
-DNS.4 = 10.0.2.2" > "./${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i 's/\[hostname\]/'${CN}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+DNS.1 = [hostname]" > "./${CERTIF_DIR}/${CN}_self_signed.config"
+sed -i 's/\[hostname\]/'${HOSTNAME}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 sed -i 's/\[country\]/'${C}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 sed -i 's/\[state\]/'${ST}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 sed -i 's/\[city\]/'${L}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 sed -i 's/\[organisation\]/'${O}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 sed -i 's/\[email\]/'${EMAIL_ADDRESS}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+
+NAMES=(${ALTNAMES//,/ })
+i=1
+for altname in "${NAMES[@]}"; do
+  let "i=i+1"
+  echo "DNS.${i} = ${altname}" >> "${CERTIF_DIR}/${CN}_self_signed.config"
+done
 
 echo ""
 echo openssl req -config \"${CERTIF_DIR}/${CN}_self_signed.config\" -new -keyout \"${CERTIF_DIR}/${CN}_req_key.pem\" -passout pass:${SERVER_SSL_KEY_PASSWORD} -out \"${CERTIF_DIR}/${CN}_cert_req.pem\" -reqexts v3_req
@@ -173,4 +156,5 @@ else
 fi
 
 echo "# Might have to sudo this one"
+echo \"${JAVA}/bin/keytool\" -importkeystore -srckeystore \"${CERTIF_DIR}/${CN}_self_signed.p12\" -srckeypass \"${SERVER_SSL_KEY_PASSWORD}\" -srcstorepass \"${SERVER_SSL_KEY_STORE_PASSWORD}\" -srcstoretype pkcs12 -srcalias ${CN} -destkeystore \"${CACERTS}\" -deststorepass ${CACERTS_PASSWORD} -destalias ${CN}
 "${JAVA}/bin/keytool" -importkeystore -srckeystore "${CERTIF_DIR}/${CN}_self_signed.p12" -srckeypass "${SERVER_SSL_KEY_PASSWORD}" -srcstorepass "${SERVER_SSL_KEY_STORE_PASSWORD}" -srcstoretype pkcs12 -srcalias ${CN} -destkeystore "${CACERTS}" -deststorepass ${CACERTS_PASSWORD} -destalias ${CN}
