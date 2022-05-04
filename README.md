@@ -1,18 +1,28 @@
 # self-signed-certificate-generation
-Generate self-signed certificate in various formats
+Generate self-signed certificate in various formats for the desktop your developping on.
+This script lets you add as many altnames and JDK/JRE cacerts files to update, as you want.
+
+Ouput formats for generated certificate include :
+- `.jks` for Java apps
+- `.crt` and request key `.pem` for Angular dev-server
+- `.pem` (certificate, no request key this time) to provide to spring-boot buildpacks (add your self-signed certificate to genreated docker images cacerts)
+
+`.crt` can also be imported as root certificate authority in your OS so that web browser does not display errors nor warnings when browsing to https://localhost, https://{hostname} or any of the altnames you provided.
 
 ## How to use
 Dead simple:
 - copy `self_signed.sh` to where you want certificates to be generated
 - cd to where you copied `self_signed.sh`
 - run `bash ./self_signed.sh`
-- answer the questions (defaults will generate certificates for your JAVA_HOME and localhost in Tahiti)
+- override defaults on command prompts
 
 ## What to do after
 `HOSTNAME` hereafter is to be replaced with "HOSTNAME" environment variable on Windows or the output of `hostanme` on Linux / MacOS
 - export a `SERVER_SSL_KEY_STORE` environment variable pointing to the generated jks. Be aware that this will enable SSL by default for every spring-boot app on your host. If you prefer default to be "non-ssl", also define an environment variable called `SERVER_SSL_ENABLED` with value set to `false`. In both cases, default behaviour can be overriden by adding `spring.ssl.enabled` property on command line (command line args > environment variables > properties files).
 - install generated certificated as "trusted root authority" (use `certmgr.msc` on Windows)
-- Configure Angular apps to be served over `https`:
+- add `.pem` to your spring-boot projects `bindings/ca-certificates/` directory (along with a `type` file containing `ca-certificates`)
+- configure your local services (such as [keycloak](https://www.keycloak.org/docs/latest/server_installation/index.html#_setting_up_ssl)) to use this certificates
+- configure Angular apps to be served over `https`:
   - edit npm `serve` target in `package.json` to add `--ssl --external --public-host='HOSTNAME' -c='HOSTNAME'`
   - edit angular.json, for each app, under architect -> serve -> configurations, add (after editing HOSTNAME, USERNAME and APP_NAME):
     ```json
