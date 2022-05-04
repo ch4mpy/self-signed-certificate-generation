@@ -12,6 +12,8 @@ elif [ $SERVER_SSL_KEY_PASSWORD != $SERVER_SSL_KEY_STORE_PASSWORD ]; then
   exit 1
 fi
 
+positiveAnswers=("y" "Y" "yes" "Yes" "YES")
+
 # Default values
 CERTIF_DIR="."
 if [ -z "${HOSTNAME}" ]; then
@@ -40,18 +42,33 @@ if [ -z "${JAVA}" ]; then
   echo "ERROR: could not locate JDK / JRE root directory"
   exit 1
 fi
-echo $JAVA
 # Locate cacerts file
 if [ -f "${JAVA}/lib/security/cacerts" ]; then
   # recent JDKs and JREs style
-  CACERTS="${JAVA}/lib/security/cacerts"
+  CACERTS=("${JAVA}/lib/security/cacerts")
 elif [ -f "${JAVA}/jre/lib/security/cacerts" ]; then
   # legacy JDKs style (1.8 and older)
-  CACERTS="${JAVA}/jre/lib/security/cacerts"
+  CACERTS=("${JAVA}/jre/lib/security/cacerts")
 else
   echo "ERROR: could not locate cacerts under $JAVA"
   exit 1
 fi
+
+echo ""
+read -p "Path to more JRE / JDK to add generated certificates to: " -r jdk
+while [[ ! -z "${jdk}" ]]; do
+  jdk=$(echo $jdk | sed 's/\\/\//g')
+  if [ -f "${jdk}/lib/security/cacerts" ]; then
+    # recent JDKs and JREs style
+    CACERTS+=("${jdk}/lib/security/cacerts")
+  elif [ -f "${jdk}/jre/lib/security/cacerts" ]; then
+    # legacy JDKs style (1.8 and older)
+    CACERTS+=("${jdk}/jre/lib/security/cacerts")
+  else
+    echo "ERROR: could not locate cacerts under $jdk"
+  fi
+  read -p "Path to more JRE / JDK to add generated certificates to: " -r jdk
+done
 
 read -p "cacerts pasword (default: ${CACERTS_PWD}): " CACERTS_PASSWORD
 CACERTS_PASSWORD=${CACERTS_PASSWORD:-${CACERTS_PWD}}
@@ -155,6 +172,16 @@ else
   "${JAVA}/bin/keytool" -importkeystore -srckeystore "${CERTIF_DIR}/${CN}_self_signed.p12" -srckeypass "${SERVER_SSL_KEY_PASSWORD}" -srcstorepass "${SERVER_SSL_KEY_STORE_PASSWORD}" -srcstoretype pkcs12 -srcalias ${CN} -destkeystore "${CERTIF_DIR}/${CN}_self_signed.jks" -deststoretype PKCS12 -destkeypass ${SERVER_SSL_KEY_PASSWORD} -deststorepass ${SERVER_SSL_KEY_STORE_PASSWORD} -destalias ${CN}
 fi
 
-echo "# Might have to sudo this one"
-echo \"${JAVA}/bin/keytool\" -importkeystore -srckeystore \"${CERTIF_DIR}/${CN}_self_signed.p12\" -srckeypass \"${SERVER_SSL_KEY_PASSWORD}\" -srcstorepass \"${SERVER_SSL_KEY_STORE_PASSWORD}\" -srcstoretype pkcs12 -srcalias ${CN} -destkeystore \"${CACERTS}\" -deststorepass ${CACERTS_PASSWORD} -destalias ${CN}
-"${JAVA}/bin/keytool" -importkeystore -srckeystore "${CERTIF_DIR}/${CN}_self_signed.p12" -srckeypass "${SERVER_SSL_KEY_PASSWORD}" -srcstorepass "${SERVER_SSL_KEY_STORE_PASSWORD}" -srcstoretype pkcs12 -srcalias ${CN} -destkeystore "${CACERTS}" -deststorepass ${CACERTS_PASSWORD} -destalias ${CN}
+echo ""
+echo "# Might have to sudo this ones"
+for store in "${CACERTS[@]}"; do
+  echo \"${JAVA}/bin/keytool\" -importkeystore -srckeystore \"${CERTIF_DIR}/${CN}_self_signed.p12\" -srckeypass \"${SERVER_SSL_KEY_PASSWORD}\" -srcstorepass \"${SERVER_SSL_KEY_STORE_PASSWORD}\" -srcstoretype pkcs12 -srcalias ${CN} -destkeystore \"${store}\" -deststorepass ${CACERTS_PASSWORD} -destalias ${CN}
+done
+
+echo ""
+read -p "Do you want preceding commands to be executed (Yes / No)? " apply
+if [[ " ${positiveAnswers[*]} " =~ " ${apply} " ]]; then
+  for store in "${CACERTS[@]}"; do
+    "${JAVA}/bin/keytool" -importkeystore -srckeystore "${CERTIF_DIR}/${CN}_self_signed.p12" -srckeypass "${SERVER_SSL_KEY_PASSWORD}" -srcstorepass "${SERVER_SSL_KEY_STORE_PASSWORD}" -srcstoretype pkcs12 -srcalias ${CN} -destkeystore "${store}" -deststorepass ${CACERTS_PASSWORD} -destalias ${CN}
+  done
+fi
