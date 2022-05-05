@@ -82,3 +82,35 @@ Dead simple:
         ...
         android:networkSecurityConfig="@xml/network_security_config">
     ```
+- if you don't already have a DNS for your test clients (mobile phones, tablets, virtual devices) to resolve your dev machine, you might install one like MaraDNS. Here is the conf I use on my Windows laptop as sample:
+```
+#upstream_servers = {}
+#upstream_servers["."]="8.8.8.8, 8.8.4.4" # Servers we connect to 
+root_servers = {}
+# ICANN DNS root servers 
+root_servers["."]="198.41.0.4, 199.9.14.201, 192.33.4.12, 199.7.91.13,"
+root_servers["."]+="192.203.230.10, 192.5.5.241, 192.112.36.4, "
+root_servers["."]+="198.97.190.53, 192.36.148.17, 192.58.128.30, "
+root_servers["."]+="193.0.14.129, 199.7.83.42, 202.12.27.33"
+# local DNS server
+root_servers["bravo-ch4mp."]="192.168.1.181"
+root_servers["local."]="192.168.1.181"
+
+# The IP this program has 
+bind_address="127.0.0.1, 192.168.1.181, 192.168.1.132"
+
+# The IPs allowed to connect and use the cache
+recursive_acl = "127.0.0.1/16, 192.168.0.1/16"
+
+chroot_dir = "/etc/maradns"
+
+# This is the file Deadwood uses to read the cache to and from disk
+cache_file = "dw_cache_bin"
+
+filter_rfc1918 = 0
+
+ip4 = {}
+ip4["bravo-ch4mp."] = "192.168.1.181"
+
+ip6 = {}
+```
