@@ -44,6 +44,8 @@ On Windows, this is done with `certmgr.msc`
   
 ### Android
 - create file `res/xml/network_security_config` such as (android resources names can not contain '-'):
+    * `cleartextTrafficPermitted="false"` forces the use of https for all trafic
+    * `<certificates src="@raw/bravo_ch4mp_self_signed"/>` is required only if certificate used by remote servers are self-signed (`res/raw/bravo_ch4mp_self_signed.crt` is the certificate with which my local API instance is served)
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
@@ -55,9 +57,6 @@ On Windows, this is done with `certmgr.msc`
     </base-config>
 </network-security-config>
 ```
-Here:
-  - `cleartextTrafficPermitted="false"` forces the use of https for all trafic
-  - `<certificates src="@raw/bravo_ch4mp_self_signed"/>` is required only if certificate used by remote servers are self-signed (`res/raw/bravo_ch4mp_self_signed.crt` is the certificate with which my local API instance is served)
 
 - Add `networkSecurityConfig` property to `application` tag in `AndroidManifest.xml`: 
 ```xml
