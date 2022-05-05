@@ -1,6 +1,6 @@
 # self-signed-certificate-generation
 Generate self-signed certificate in various formats for your dev machine.
-This script lets you add as many altnames and JDK/JRE cacerts files to update, as you want.
+This script let you add as many altnames and JDK/JRE cacerts files to update, as you want.
 
 Ouput formats for generated certificate include :
 - `.jks` for Java apps
