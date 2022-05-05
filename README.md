@@ -18,7 +18,7 @@ Dead simple:
 - override defaults on command prompts
 
 ## What to do after
-**HOSTNAME** hereafter is to be replaced with `HOSTNAME` environment variable on Windows or the output of `hostanme` on Linux / MacOS
+**HOSTNAME** hereafter is to be replaced with any of the `altnames` you provided when generating the certificate. Could be `localhost`, but I recommand the value of `HOSTNAME` environment variable on Windows or the output of `hostanme` on Linux / MacOS if using mobile test devices or Docker containers.
 
 ### OS
 Import generated certificate as trusted root authority. This will remove errors and warnings from all your browsers when you navigate over https to any of the `altnames` you provided (localhost, $HOSTNAME, ...).
