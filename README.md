@@ -41,54 +41,56 @@ On Windows, this is done with `certmgr.msc`
     "sslKey": "C:/Users/USERNAME/.ssh/HOSTNAME_req_key.pem"
   },
   ```
-- Configure Android or iOS app deep links.
-To do it on Android:
-- Add intent filters in AndroidManifest.xml such as: 
-  ``` xml
-      <intent-filter>
-          <action android:name="android.intent.action.VIEW" />
-          <category android:name="android.intent.category.DEFAULT" />
-          <category android:name="android.intent.category.BROWSABLE" />
-          <data android:scheme="https" android:host="bravo-ch4mp" android:port="8100" />
-      </intent-filter>
-
-      <intent-filter>
-          <action android:name="android.intent.action.VIEW" />
-          <category android:name="android.intent.category.DEFAULT" />
-          <category android:name="android.intent.category.BROWSABLE" />
-          <data android:scheme="https" android:host="bao-loc.c4-soft.com" />
-      </intent-filter>
-  ```
   
 ### Android
-- Add this to `CapacitorConfig` in `projects/$APP_NAME/capacitor.config.ts`: 
-  ```typescript
-  server: {
-      hostname: 'localhost',
-      androidScheme: 'https'
-  }
-  ```
 - create file `res/xml/network_security_config` such as (android resources names can not contain '-'):
-  ```xml
-  <?xml version="1.0" encoding="utf-8"?>
-  <network-security-config>
-      <base-config cleartextTrafficPermitted="false">
-          <trust-anchors>
-          <certificates src="@raw/bravo_ch4mp_self_signed"/>
-          <certificates src="system"/>
-          </trust-anchors>
-      </base-config>
-  </network-security-config>
-  ```
-  Here:
-  - `cleartextTrafficPermitted="false"` forces the use of https for all trafic
-  - `<certificates src="@raw/bravo_ch4mp_self_signed"/>` is required only if certificate used by remote servers are self-signed (`res/raw/bravo_ch4mp_self_signed.crt` is the certificate with which my local API instance is served)
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+        <certificates src="@raw/bravo_ch4mp_self_signed"/>
+        <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+</network-security-config>
+```
+Here:
+- `cleartextTrafficPermitted="false"` forces the use of https for all trafic
+- `<certificates src="@raw/bravo_ch4mp_self_signed"/>` is required only if certificate used by remote servers are self-signed (`res/raw/bravo_ch4mp_self_signed.crt` is the certificate with which my local API instance is served)
+
 - Add `networkSecurityConfig` property to `application` tag in `AndroidManifest.xml`: 
-  ```xml
-  <application
-      ...
-      android:networkSecurityConfig="@xml/network_security_config">
-  ```
+```xml
+<application
+    ...
+    android:networkSecurityConfig="@xml/network_security_config">
+```
+
+- Add / edit intent filters in AndroidManifest.xml for deep links to use https instead of http: 
+``` xml
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="https" android:host="bravo-ch4mp" android:port="8100" />
+    </intent-filter>
+
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="https" android:host="bao-loc.c4-soft.com" />
+    </intent-filter>
+```
+
+### Ionic
+Add this to `CapacitorConfig` in `projects/$APP_NAME/capacitor.config.ts`: 
+```typescript
+server: {
+    hostname: 'localhost',
+    androidScheme: 'https'
+}
+```
  
 ### Local services
 Services you run on your dev machine (such as [keycloak](https://www.keycloak.org/docs/latest/server_installation/index.html#_setting_up_ssl)) should be configured to be served over https, using the certificates you generated.  
