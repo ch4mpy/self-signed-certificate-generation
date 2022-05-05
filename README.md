@@ -56,8 +56,8 @@ On Windows, this is done with `certmgr.msc`
 </network-security-config>
 ```
 Here:
-- `cleartextTrafficPermitted="false"` forces the use of https for all trafic
-- `<certificates src="@raw/bravo_ch4mp_self_signed"/>` is required only if certificate used by remote servers are self-signed (`res/raw/bravo_ch4mp_self_signed.crt` is the certificate with which my local API instance is served)
+  - `cleartextTrafficPermitted="false"` forces the use of https for all trafic
+  - `<certificates src="@raw/bravo_ch4mp_self_signed"/>` is required only if certificate used by remote servers are self-signed (`res/raw/bravo_ch4mp_self_signed.crt` is the certificate with which my local API instance is served)
 
 - Add `networkSecurityConfig` property to `application` tag in `AndroidManifest.xml`: 
 ```xml
