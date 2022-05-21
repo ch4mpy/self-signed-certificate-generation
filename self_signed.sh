@@ -149,7 +149,7 @@ else
 fi
 
 echo openssl x509 -in \"${CERTIF_DIR}/${CN}_self_signed.crt\" -out \"${CERTIF_DIR}/${CN}_self_signed.pem\" -outform PEM
-if [ -f "" ]; then
+if [ -f "${CERTIF_DIR}/${CN}_self_signed.pem" ]; then
   echo "${CERTIF_DIR}/${CN}_self_signed.pem already exists, doing nothing"
   echo ""
 else
