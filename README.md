@@ -17,6 +17,8 @@ Dead simple:
 - run `bash ./self_signed.sh`
 - override defaults on command prompts
 
+On Windows, [Git-scm](https://git-scm.com/downloads) provides with bash.
+
 ## What to do after
 **HOSTNAME** hereafter is to be replaced with any of the `altnames` you provided when generating the certificate. Could be `localhost`, but I recommand the value of `HOSTNAME` environment variable on Windows or the output of `hostanme` on Linux / MacOS if using mobile test devices or Docker containers.
 
