@@ -66,7 +66,11 @@ ip4["bravo-ch4mp."] = "192.168.1.181"
 ip6 = {}
 ```
 
-### Angular
+### Local services
+Services you run on your dev machine (such as [keycloak](https://www.keycloak.org/docs/latest/server_installation/index.html#_setting_up_ssl)) should be configured to be served over https, using the certificates you generated. 
+
+#### Angular
+To run Angular apps with dev-server and https (change `HOSTNAME` below):
 - edit npm `serve` target in `package.json` to add `--ssl --external --public-host='HOSTNAME' -c='HOSTNAME'`
 - edit angular.json, for each app, under architect -> serve -> configurations, add (after editing HOSTNAME, USERNAME and APP_NAME):
   ```json
@@ -126,7 +130,4 @@ server: {
     hostname: 'localhost',
     androidScheme: 'https'
 }
-```
- 
-### Local services
-Services you run on your dev machine (such as [keycloak](https://www.keycloak.org/docs/latest/server_installation/index.html#_setting_up_ssl)) should be configured to be served over https, using the certificates you generated.  
+``` 
