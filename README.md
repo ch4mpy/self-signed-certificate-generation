@@ -29,6 +29,43 @@ On Windows, this is done with `certmgr.msc`
 - export a `SERVER_SSL_KEY_STORE` environment variable pointing to the generated jks. Be aware that this will enable SSL by default for every spring-boot app on your host. If you prefer default to be "non-ssl", also define an environment variable called `SERVER_SSL_ENABLED` with value set to `false`. In both cases, default behaviour can be overriden by adding `spring.ssl.enabled` property on command line (command line args > environment variables > properties files).
 - add `.pem` to your spring-boot projects `bindings/ca-certificates/` directory (along with a `type` file containing `ca-certificates`)
 
+### DNS
+If you don't already have a DNS for your test client to resolve your dev machine, you might install one like MaraDNS.
+This is super useful for mobile phones, tablets, virtual devices, etc.
+
+Here is the conf I use on my Windows laptop as sample:
+```
+#upstream_servers = {}
+#upstream_servers["."]="8.8.8.8, 8.8.4.4" # Servers we connect to 
+root_servers = {}
+# ICANN DNS root servers 
+root_servers["."]="198.41.0.4, 199.9.14.201, 192.33.4.12, 199.7.91.13,"
+root_servers["."]+="192.203.230.10, 192.5.5.241, 192.112.36.4, "
+root_servers["."]+="198.97.190.53, 192.36.148.17, 192.58.128.30, "
+root_servers["."]+="193.0.14.129, 199.7.83.42, 202.12.27.33"
+# local DNS server
+root_servers["bravo-ch4mp."]="192.168.1.181"
+root_servers["local."]="192.168.1.181"
+
+# The IP this program has 
+bind_address="127.0.0.1, 192.168.1.181, 192.168.1.132"
+
+# The IPs allowed to connect and use the cache
+recursive_acl = "127.0.0.1/16, 192.168.0.1/16"
+
+chroot_dir = "/etc/maradns"
+
+# This is the file Deadwood uses to read the cache to and from disk
+cache_file = "dw_cache_bin"
+
+filter_rfc1918 = 0
+
+ip4 = {}
+ip4["bravo-ch4mp."] = "192.168.1.181"
+
+ip6 = {}
+```
+
 ### Angular
 - edit npm `serve` target in `package.json` to add `--ssl --external --public-host='HOSTNAME' -c='HOSTNAME'`
 - edit angular.json, for each app, under architect -> serve -> configurations, add (after editing HOSTNAME, USERNAME and APP_NAME):
@@ -93,40 +130,3 @@ server: {
  
 ### Local services
 Services you run on your dev machine (such as [keycloak](https://www.keycloak.org/docs/latest/server_installation/index.html#_setting_up_ssl)) should be configured to be served over https, using the certificates you generated.  
- 
-### DNS
-If you don't already have a DNS for your test client to resolve your dev machine, you might install one like MaraDNS.
-This is super useful for mobile phones, tablets, virtual devices, etc.
-
-Here is the conf I use on my Windows laptop as sample:
-```
-#upstream_servers = {}
-#upstream_servers["."]="8.8.8.8, 8.8.4.4" # Servers we connect to 
-root_servers = {}
-# ICANN DNS root servers 
-root_servers["."]="198.41.0.4, 199.9.14.201, 192.33.4.12, 199.7.91.13,"
-root_servers["."]+="192.203.230.10, 192.5.5.241, 192.112.36.4, "
-root_servers["."]+="198.97.190.53, 192.36.148.17, 192.58.128.30, "
-root_servers["."]+="193.0.14.129, 199.7.83.42, 202.12.27.33"
-# local DNS server
-root_servers["bravo-ch4mp."]="192.168.1.181"
-root_servers["local."]="192.168.1.181"
-
-# The IP this program has 
-bind_address="127.0.0.1, 192.168.1.181, 192.168.1.132"
-
-# The IPs allowed to connect and use the cache
-recursive_acl = "127.0.0.1/16, 192.168.0.1/16"
-
-chroot_dir = "/etc/maradns"
-
-# This is the file Deadwood uses to read the cache to and from disk
-cache_file = "dw_cache_bin"
-
-filter_rfc1918 = 0
-
-ip4 = {}
-ip4["bravo-ch4mp."] = "192.168.1.181"
-
-ip6 = {}
-```
