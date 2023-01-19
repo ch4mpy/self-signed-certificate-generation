@@ -118,12 +118,12 @@ extendedKeyUsage = critical, serverAuth, clientAuth\n\
 \n\
 [alt_names]\n\
 DNS.1 = [hostname]" > "./${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i 's/\[hostname\]/'${HOSTNAME}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i 's/\[country\]/'${C}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i 's/\[state\]/'${ST}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i 's/\[city\]/'${L}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i 's/\[organisation\]/'${O}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i 's/\[email\]/'${EMAIL_ADDRESS}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+sed -i '' -e 's/\[hostname\]/'${HOSTNAME}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+sed -i '' -e 's/\[country\]/'${C}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+sed -i '' -e 's/\[state\]/'${ST}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+sed -i '' -e 's/\[city\]/'${L}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+sed -i '' -e 's/\[organisation\]/'${O}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+sed -i '' -e 's/\[email\]/'${EMAIL_ADDRESS}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 
 NAMES=(${ALTNAMES//,/ })
 i=1
