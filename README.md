@@ -27,6 +27,8 @@ Import generated certificate as trusted root authority. This will remove errors 
 
 On Windows, this is done with `certmgr.msc`
 
+On Mac, open `Keychain`, import the `.p12` file in your session certificates and then open it from `Keychain` to approve it in "trust" tab.
+
 ### Spring-boot
 - export a `SERVER_SSL_KEY_STORE` environment variable pointing to the generated jks. Be aware that this will enable SSL by default for every spring-boot app on your host. If you prefer default to be "non-ssl", also define an environment variable called `SERVER_SSL_ENABLED` with value set to `false`. In both cases, default behaviour can be overriden by adding `spring.ssl.enabled` property on command line (command line args > environment variables > properties files).
 - add `.pem` to your spring-boot projects `bindings/ca-certificates/` directory (along with a `type` file containing `ca-certificates`)
