@@ -17,7 +17,7 @@ Dead simple:
 - run `bash ./self_signed.sh`
 - override defaults on command prompts
 
-On Windows, [Git-scm](https://git-scm.com/downloads) provides with bash.
+On Windows, [Git-scm](https://git-scm.com/downloads) provides with bash. On Mac OS, it is provided by default.
 
 ## What to do after
 **HOSTNAME** hereafter is to be replaced with any of the `altnames` you provided when generating the certificate. Could be `localhost`, but I recommand the value of `HOSTNAME` environment variable on Windows or the output of `hostanme` on Linux / MacOS if using mobile test devices or Docker containers.
@@ -71,7 +71,7 @@ ip6 = {}
 ```
 
 ### Local services
-Services you run on your dev machine (such as [keycloak](https://www.keycloak.org/docs/latest/server_installation/index.html#_setting_up_ssl)) should be configured to be served over https, using the certificates you generated. 
+Services you run on your dev machine (such as [keycloak](https://www.keycloak.org/server/enabletls)) should be configured to be served over https, using the certificates you generated. 
 
 #### Angular
 To run Angular apps with dev-server and https (change `HOSTNAME` below):
