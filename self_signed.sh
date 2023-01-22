@@ -17,10 +17,10 @@ positiveAnswers=("y" "Y" "yes" "Yes" "YES")
 # Default values
 CERTIF_DIR="."
 if [ -z "${HOSTNAME}" ]; then
-  HOSTNAME=`hostanme`
+  HOSTNAME=`hostname`
 fi
 CN=${HOSTNAME}
-DEFAULT_ALTNAMES="localhost,127.0.0.1,10.0.2.2"
+DEFAULT_ALTNAMES="localhost"
 CACERTS_PWD="changeit"
 OUT_DIR="."
 COUNTRY="PF"
