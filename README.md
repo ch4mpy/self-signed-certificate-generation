@@ -127,7 +127,7 @@ To run Angular apps with dev-server and https (change `HOSTNAME` below):
     </intent-filter>
 ```
 
-### Ionic
+### Capacitor (and Ionic) 
 Add this to `CapacitorConfig` in `projects/$APP_NAME/capacitor.config.ts`: 
 ```typescript
 server: {
