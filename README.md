@@ -12,9 +12,15 @@ Ouput formats for generated certificate include :
 ## How to use
 Dead simple:
 - set `SERVER_SSL_KEY_PASSWORD` and `SERVER_SSL_KEY_STORE_PASSWORD` environment variables (must be identical due to pk12 limitations, so use one to set the other)
-- copy `self_signed.sh` to where you want certificates to be generated
-- cd to where you copied `self_signed.sh`
-- run `bash ./self_signed.sh`
+```bash
+curl https://github.com/ch4mpy/self-signed-certificate-generation/archive/refs/tags/1.0.0.zip  -O -J -L
+unzip ./self-signed-certificate-generation-1.0.0.zip
+touch ~/.ssh
+cp ./self-signed-certificate-generation-1.0.0/self_signed.sh ~/.ssh/
+rm -R ./self-signed-certificate-generation-1.0.0/ self-signed-certificate-generation-1.0.0.zip
+cd ~/.ssh/
+bash ./self_signed.sh
+```
 - override defaults on command prompts
 
 On Windows, [Git-scm](https://git-scm.com/downloads) provides with bash. On Mac OS, it is provided by default.
