@@ -12,6 +12,12 @@ elif [ $SERVER_SSL_KEY_PASSWORD != $SERVER_SSL_KEY_STORE_PASSWORD ]; then
   exit 1
 fi
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  SED="sed -i '' -e"
+else
+  SED="sed -i -e"
+fi
+
 positiveAnswers=("y" "Y" "yes" "Yes" "YES")
 
 # Default values
@@ -118,12 +124,12 @@ extendedKeyUsage = critical, serverAuth, clientAuth\n\
 \n\
 [alt_names]\n\
 DNS.1 = [hostname]" > "./${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i '' -e 's/\[hostname\]/'${HOSTNAME}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i '' -e 's/\[country\]/'${C}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i '' -e 's/\[state\]/'${ST}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i '' -e 's/\[city\]/'${L}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i '' -e 's/\[organisation\]/'${O}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
-sed -i '' -e 's/\[email\]/'${EMAIL_ADDRESS}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+$SED 's/\[hostname\]/'${HOSTNAME}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+$SED 's/\[country\]/'${C}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+$SED 's/\[state\]/'${ST}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+$SED 's/\[city\]/'${L}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+$SED 's/\[organisation\]/'${O}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+$SED 's/\[email\]/'${EMAIL_ADDRESS}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 
 NAMES=(${ALTNAMES//,/ })
 i=1
