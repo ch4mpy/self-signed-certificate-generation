@@ -117,14 +117,12 @@ To run Angular apps with dev-server and https (change `HOSTNAME` below):
     </base-config>
 </network-security-config>
 ```
-
 - Add `networkSecurityConfig` property to `application` tag in `AndroidManifest.xml`: 
 ```xml
 <application
     ...
     android:networkSecurityConfig="@xml/network_security_config">
 ```
-
 - Add / edit intent filters in AndroidManifest.xml for deep links to use https instead of http: 
 ``` xml
     <intent-filter>
