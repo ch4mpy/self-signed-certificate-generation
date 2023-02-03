@@ -1,6 +1,5 @@
 # self-signed-certificate-generation
-Generate self-signed certificate in various formats for your dev machine.
-This script let you add as many altnames and JDK/JRE cacerts files to update, as you want.
+Generate self-signed certificate in various formats for your dev machine and adds it to the `cacerts` files of your JREs / JDKs. You may add as many `altnames` and JDK/JRE as you want.
 
 Ouput formats for generated certificate include :
 - `.jks` for Java apps
@@ -11,11 +10,27 @@ Ouput formats for generated certificate include :
 
 ## How to use
 Dead simple:
-- set `SERVER_SSL_KEY_PASSWORD` and `SERVER_SSL_KEY_STORE_PASSWORD` environment variables (must be identical due to pk12 limitations, so use one to set the other)
-- copy `self_signed.sh` to where you want certificates to be generated
-- cd to where you copied `self_signed.sh`
-- run `bash ./self_signed.sh`
-- override defaults on command prompts
+
+1. set `SERVER_SSL_KEY_PASSWORD` and `SERVER_SSL_KEY_STORE_PASSWORD` environment variables (must be identical due to pk12 limitations, so use one to set the other). For that:
+  - on windows: go to `system properties` -> `environment variables` -> `user variables for xxx` set the following pairs:
+    * `SERVER_SSL_KEY_PASSWORD` with a random value of your choice
+    * `SERVER_SSL_KEY_STORE_PASSWORD` with `%SERVER_SSL_KEY_PASSWORD%` as value
+    * `JAVA_HOME` pointing to the home directory of your default JDK (if not set already)
+  - on OS X: edit ~/.zshenv or ~/.bash_profile or whatever your favourite shell uses to add:
+    * `export SERVER_SSL_KEY_PASSWORD="change-m3-with-A-strong-paSsword!"`
+    * `export SERVER_SSL_KEY_STORE_PASSWORD=$SERVER_SSL_KEY_PASSWORD`
+    * `export JAVA_HOME=$(/usr/libexec/java_home)` (if not set already)
+2. download the script from Github releases and run it:
+```bash
+curl https://github.com/ch4mpy/self-signed-certificate-generation/archive/refs/tags/1.0.0.zip  -O -J -L
+unzip ./self-signed-certificate-generation-1.0.0.zip
+touch ~/.ssh
+cp ./self-signed-certificate-generation-1.0.0/self_signed.sh ~/.ssh/
+rm -R ./self-signed-certificate-generation-1.0.0/ self-signed-certificate-generation-1.0.0.zip
+cd ~/.ssh/
+bash ./self_signed.sh
+```
+You'll be prompted to override defaults
 
 On Windows, [Git-scm](https://git-scm.com/downloads) provides with bash. On Mac OS, it is provided by default.
 
@@ -102,14 +117,12 @@ To run Angular apps with dev-server and https (change `HOSTNAME` below):
     </base-config>
 </network-security-config>
 ```
-
 - Add `networkSecurityConfig` property to `application` tag in `AndroidManifest.xml`: 
 ```xml
 <application
     ...
     android:networkSecurityConfig="@xml/network_security_config">
 ```
-
 - Add / edit intent filters in AndroidManifest.xml for deep links to use https instead of http: 
 ``` xml
     <intent-filter>
