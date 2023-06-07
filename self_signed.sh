@@ -83,16 +83,16 @@ read -p "Country (2 chars ISO code , default: ${COUNTRY}): " C
 C=${C:-${COUNTRY}}
 
 read -p "State (default: ${STATE}): " ST
-ST={ST:-${STATE}}
+ST=${ST:-${STATE}}
 
 read -p "City (default: ${CITY}): " L
-L={L:-${CITY}}
+L=${L:-${CITY}}
 
 read -p "Organisation (default: ${ORGANISATION}): " O
-O={O:-${ORGANISATION}}
+O=${O:-${ORGANISATION}}
 
 read -p "e-mail (default: ${EMAIL}): " EMAIL_ADDRESS
-EMAIL_ADDRESS=EMAIL_ADDRESS{:-${EMAIL}}
+EMAIL_ADDRESS=${EMAIL_ADDRESS:-${EMAIL}}
 
 # Create templated config
 rm -f ${CN}_self_signed.config;
@@ -128,8 +128,8 @@ $SED 's/\[hostname\]/'${HOSTNAME}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 $SED 's/\[country\]/'${C}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 $SED 's/\[state\]/'${ST}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 $SED 's/\[city\]/'${L}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
-$SED 's/\[organisation\]/'${O}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
-$SED 's/\[email\]/'${EMAIL_ADDRESS}'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+$SED 's/\[organisation\]/'"${O}"'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
+$SED 's/\[email\]/'"${EMAIL_ADDRESS}"'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 
 NAMES=(${ALTNAMES//,/ })
 i=1
