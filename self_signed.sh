@@ -190,7 +190,7 @@ done
 
 echo ""
 read -p "Do you want preceding commands to be executed (Yes / No)? " apply
-if [[ " ${positiveAnswers[*]} " =~ " ${apply} " ]]; then
+if [[ " ${positiveAnswers[*]} " =~ ${apply} ]]; then
   for store in "${CACERTS[@]}"; do
     "${JAVA}/bin/keytool" -importkeystore -srckeystore "${CERTIF_DIR}/${CN}_self_signed.p12" -srckeypass "${SERVER_SSL_KEY_PASSWORD}" -srcstorepass "${SERVER_SSL_KEY_STORE_PASSWORD}" -srcstoretype pkcs12 -srcalias "${CN}" -destkeystore "${store}" -deststorepass "${CACERTS_PASSWORD}" -destalias "${CN}"
   done
