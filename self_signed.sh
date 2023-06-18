@@ -133,7 +133,7 @@ $SED 's/\[email\]/'"${EMAIL_ADDRESS}"'/g' "${CERTIF_DIR}/${CN}_self_signed.confi
 
 NAMES=("${ALTNAMES//,/ }")
 i=1
-for altname in "${NAMES[@]}"; do
+for altname in ${NAMES[@]}; do
   let "i=i+1"
   echo "DNS.${i} = ${altname}" >> "${CERTIF_DIR}/${CN}_self_signed.config"
 done
