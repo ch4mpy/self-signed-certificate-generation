@@ -1,7 +1,7 @@
 I did not know about [mkcert](https://github.com/FiloSottile/mkcert) when I wrote this, you could consider using it instead of this script (but I'm not sure it is able to add the new certificate to several JDK/JRE cacerts file like the script below does).
 
 # self-signed-certificate-generation
-Generate self-signed certificate in various formats for your dev machine and adds it to the `cacerts` files of your JREs / JDKs. You may add as many `altnames` and JDK/JRE as you want.
+Generate self-signed certificate in various formats for your dev machine and adds it to the `cacerts` files of your JREs / JDKs. You may add as many `alt_names` (including IP adresses) and JDK/JRE as you want.
 
 Ouput formats for generated certificate include :
 - `.jks` for Java apps
@@ -24,11 +24,11 @@ Dead simple:
     * `export JAVA_HOME=$(/usr/libexec/java_home)` (if not set already)
 2. download the script from Github releases and run it:
 ```bash
-curl https://github.com/ch4mpy/self-signed-certificate-generation/archive/refs/tags/1.0.0.zip  -O -J -L
-unzip ./self-signed-certificate-generation-1.0.0.zip
+curl https://github.com/ch4mpy/self-signed-certificate-generation/archive/refs/tags/1.0.1.zip  -O -J -L
+unzip ./self-signed-certificate-generation-1.0.1.zip
 touch ~/.ssh
-cp ./self-signed-certificate-generation-1.0.0/self_signed.sh ~/.ssh/
-rm -R ./self-signed-certificate-generation-1.0.0/ self-signed-certificate-generation-1.0.0.zip
+cp ./self-signed-certificate-generation-1.0.1/self_signed.sh ~/.ssh/
+rm -R ./self-signed-certificate-generation-1.0.1/ self-signed-certificate-generation-1.0.1.zip
 cd ~/.ssh/
 bash ./self_signed.sh
 ```
@@ -37,7 +37,7 @@ You'll be prompted to override defaults
 On Windows, [Git-scm](https://git-scm.com/downloads) provides with bash. On Mac OS, it is provided by default.
 
 ## What to do after
-**HOSTNAME** hereafter is to be replaced with any of the `altnames` you provided when generating the certificate. Could be `localhost`, but I recommand the value of `HOSTNAME` environment variable on Windows or the output of `hostanme` on Linux / MacOS if using mobile test devices or Docker containers.
+**HOSTNAME** hereafter is to be replaced with any of the `alt_names` you provided when generating the certificate. Could be `localhost`, but I recommand the value of `HOSTNAME` environment variable on Windows or the output of `hostanme` on Linux / MacOS if using mobile test devices or Docker containers.
 
 ### OS
 Import generated certificate as trusted root authority. This will remove errors and warnings from all your browsers when you navigate over https to any of the `altnames` you provided (localhost, $HOSTNAME, ...).

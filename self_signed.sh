@@ -34,6 +34,7 @@ STATE="Tahiti"
 CITY="Papeete"
 ORGANISATION="c4-soft"
 EMAIL=`whoami`"@${ORGANISATION}.com"
+IP_REGEXP="^((([0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(([0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)))|(([a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4})$"
 
 # User inputs
 echo ""
@@ -132,10 +133,19 @@ $SED 's/\[organisation\]/'"${O}"'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 $SED 's/\[email\]/'"${EMAIL_ADDRESS}"'/g' "${CERTIF_DIR}/${CN}_self_signed.config"
 
 NAMES=("${ALTNAMES//,/ }")
-i=1
+ip_i=1
+dns_i=2
 for altname in ${NAMES[@]}; do
-  let "i=i+1"
-  echo "DNS.${i} = ${altname}" >> "${CERTIF_DIR}/${CN}_self_signed.config"
+  if ! [[ ${altname} =~ $IP_REGEXP ]]; then
+    echo "DNS.${dns_i} = ${altname}" >> "${CERTIF_DIR}/${CN}_self_signed.config"
+    let "dns_i=dns_i+1"
+  fi
+done
+for altname in ${NAMES[@]}; do
+  if [[ ${altname} =~ $IP_REGEXP ]]; then
+    echo "IP.${ip_i} = ${altname}" >> "${CERTIF_DIR}/${CN}_self_signed.config"
+    let "ip_i=ip_i+1"
+  fi
 done
 
 echo ""
