@@ -1,7 +1,7 @@
 I did not know about [mkcert](https://github.com/FiloSottile/mkcert) when I wrote this, you could consider using it instead of this script (but I'm not sure it is able to add the new certificate to several JDK/JRE cacerts file like the script below does).
 
 # self-signed-certificate-generation
-Generate self-signed certificate in various formats for your dev machine and adds it to the `cacerts` files of your JREs / JDKs. You may add as many `alt_names` (including IP adresses) and JDK/JRE as you want.
+Generate self-signed certificate in various formats for your dev machine and adds it to the `cacerts` files of your JREs / JDKs. You may add as many `alt_names` (including IP adresses) and JDK/JRE as you want (for the new certificate to be added to `cacerts` file).
 
 Ouput formats for generated certificate include :
 - `.jks` for Java apps
