@@ -35,7 +35,7 @@ fi
 read -p "cacerts pasword (default: ${CACERTS_PWD}): " CACERTS_PASSWORD
 CACERTS_PASSWORD=${CACERTS_PASSWORD:-${CACERTS_PWD}}
 
-read -p "cacerts pasword (default: ${CERTIF_DIR}/${HOSTNAME}_self_signed.jks): " JKS
+read -p "certificate to import (default: ${CERTIF_DIR}/${HOSTNAME}_self_signed.jks): " JKS
 CERTIFICATE=${JKS:-${CERTIF_DIR}/${HOSTNAME}_self_signed.jks}
 
 if [ ! -f "${CERTIFICATE}" ]; then
