@@ -26,7 +26,7 @@ if [ -z "${HOSTNAME}" ]; then
   HOSTNAME=`hostname`
 fi
 CN=${HOSTNAME}
-DEFAULT_ALTNAMES="localhost,127.0.0.1,10.0.2.2"
+DEFAULT_ALTNAMES="localhost,host.docker.internal,127.0.0.1,10.0.2.2"
 CACERTS_PWD="changeit"
 OUT_DIR="."
 COUNTRY="PF"
