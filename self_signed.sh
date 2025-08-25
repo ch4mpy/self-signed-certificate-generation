@@ -1,19 +1,21 @@
 #!/bin/bash
-if [ -z "$SERVER_SSL_KEY_PASSWORD" ] || [ -z "$SERVER_SSL_KEY_STORE_PASSWORD" ]; then
-  echo "following environment variables must be set (and identical):"
-  echo "  - SERVER_SSL_KEY_PASSWORD"
-  echo "  - SERVER_SSL_KEY_STORE_PASSWORD"
-  exit 1
-
+SSL_PASSWORD=$SERVER_SSL_KEY_STORE_PASSWORD
+if [ -z "$SSL_PASSWORD" ]; then
+  read -p "SSL password (use for key and keystore): " SSL_PASSWORD
+  if [ -z "$SSL_PASSWORD" ]; then
+    echo "SSL password can't be empty"
+    exit 1
+  fi
+  SERVER_SSL_KEY_PASSWORD=$SSL_PASSWORD
 
   # Check that SERVER_SSL_KEY_PASSWORD and SERVER_SSL_KEY_STORE_PASSWORD are identical
 elif [ "$SERVER_SSL_KEY_PASSWORD" != "$SERVER_SSL_KEY_STORE_PASSWORD" ]; then
-  echo "Due to PCKS12 limitation key and keystore passwords must be the same"
+  echo "Due to PCKS12 limitation, key and keystore passwords must be the same"
   exit 1
 fi
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  SED="sed -i '' -e"
+  SED="sed -i'' -e"
 else
   SED="sed -i -e"
 fi
@@ -97,7 +99,7 @@ EMAIL_ADDRESS=${EMAIL_ADDRESS:-${EMAIL}}
 
 # Create templated config
 rm -f "${CN}"_self_signed.config;
-echo -e "[req]\n\
+echo "[req]\n\
 default_bits       = 2048\n\
 default_md         = sha256\n\
 prompt             = no\n\
@@ -156,18 +158,17 @@ else
   openssl req -config "${CERTIF_DIR}/${CN}_self_signed.config" -new -keyout "${CERTIF_DIR}/${CN}_req_key.pem" -passout pass:"${SERVER_SSL_KEY_PASSWORD}" -out "${CERTIF_DIR}/${CN}_cert_req.pem" -reqexts v3_req
 fi
 
-# shellcheck disable=SC2086
-# shellcheck disable=SC2086
-echo openssl x509 -req -days 365 -extfile \"${CERTIF_DIR}/"${CN}"_self_signed.config\" -in \"${CERTIF_DIR}/"${CN}"_cert_req.pem\" -extensions v3_req -signkey \"${CERTIF_DIR}/"${CN}"_req_key.pem\" -passin pass:${SERVER_SSL_KEY_PASSWORD} -out \"${CERTIF_DIR}/${CN}_self_signed.crt\"
+DEFAULT_DURATION=3650
+read -p "Certificate validity length in days (default: ${DEFAULT_DURATION}): " DURATION
+DURATION=${DURATION:-${DEFAULT_DURATION}}
+echo openssl x509 -req -days ${DURATION} -extfile \"${CERTIF_DIR}/"${CN}"_self_signed.config\" -in \"${CERTIF_DIR}/"${CN}"_cert_req.pem\" -extensions v3_req -signkey \"${CERTIF_DIR}/"${CN}"_req_key.pem\" -passin pass:${SERVER_SSL_KEY_PASSWORD} -out \"${CERTIF_DIR}/${CN}_self_signed.crt\"
 if [ -f "${CERTIF_DIR}/${CN}_self_signed.crt" ]; then
   echo "${CERTIF_DIR}/${CN}_self_signed.crt already exists, doing nothing"
   echo ""
 else
-  # shellcheck disable=SC2086
-  openssl x509 -req -days 365 -extfile "${CERTIF_DIR}/${CN}_self_signed.config" -in "${CERTIF_DIR}/${CN}_cert_req.pem" -extensions v3_req -signkey "${CERTIF_DIR}/${CN}_req_key.pem" -passin pass:"${SERVER_SSL_KEY_PASSWORD}" -out "${CERTIF_DIR}/${CN}_self_signed.crt"
+  openssl x509 -req -days ${DURATION} -extfile "${CERTIF_DIR}/${CN}_self_signed.config" -in "${CERTIF_DIR}/${CN}_cert_req.pem" -extensions v3_req -signkey "${CERTIF_DIR}/${CN}_req_key.pem" -passin pass:"${SERVER_SSL_KEY_PASSWORD}" -out "${CERTIF_DIR}/${CN}_self_signed.crt"
 fi
 
-# shellcheck disable=SC2086
 echo openssl x509 -in \"${CERTIF_DIR}/"${CN}"_self_signed.crt\" -out \"${CERTIF_DIR}/${CN}_self_signed.pem\" -outform PEM
 if [ -f "${CERTIF_DIR}/${CN}_self_signed.pem" ]; then
   echo "${CERTIF_DIR}/${CN}_self_signed.pem already exists, doing nothing"
@@ -193,7 +194,7 @@ else
 fi
 
 echo ""
-echo "# Might have to sudo this ones"
+echo "# Could have to sudo these"
 for store in "${CACERTS[@]}"; do
   echo \""${JAVA}"/bin/keytool\" -importkeystore -srckeystore \"${CERTIF_DIR}/"${CN}"_self_signed.p12\" -srckeypass \""${SERVER_SSL_KEY_PASSWORD}"\" -srcstorepass \""${SERVER_SSL_KEY_STORE_PASSWORD}"\" -srcstoretype pkcs12 -srcalias "${CN}" -destkeystore \""${store}"\" -deststorepass "${CACERTS_PASSWORD}" -destalias "${CN}"
 done
